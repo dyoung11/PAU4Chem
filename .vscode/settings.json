@@ -1,3 +1,8 @@
 {
-    "python.pythonPath": "G:\\Envs\\pau4chem\\Scripts\\python.exe"
+    "python.pythonPath": "C:\\Users\\jacob\\envs\\pau\\Scripts\\python.exe",
+    "python.linting.pylintEnabled": false,
+    "python.linting.pycodestyleEnabled": true,
+    "python.linting.enabled": true,
+    "python.linting.pydocstyleEnabled": false,
+    "python.linting.flake8Enabled": false
 }
