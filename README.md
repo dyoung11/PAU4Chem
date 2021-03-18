@@ -6,7 +6,7 @@ These Python codes build the PAU dataset for tracking and allocating the chemica
   <img src=https://github.com/jodhernandezbe/PAU4Chem/blob/master/PAU_dataset.svg width="80%">
 </p>
 
-# Requirements
+## Requirements
 
 This code was written using Python 3.x, Anaconda 3, and operating system Ubuntu 18.04. The following Python libraries are required for running the code:
 
@@ -18,9 +18,9 @@ This code was written using Python 3.x, Anaconda 3, and operating system Ubuntu 
 5. [numpy](https://anaconda.org/conda-forge/numpy)
 6. [xlrd](https://anaconda.org/anaconda/xlrd)
 
-# How to use
+## How to use
 
-## Web scraping module
+### Web scraping module
 
 PAU4Chem is a modular framework that uses web scraping for extracing the TRI information from the web and organizes it before the data engineering.
 In order to run the web scraping module, navigate to the folder [extract](https://github.com/jodhernandezbe/PAU4Chem/tree/master/extract). Then, you execute the following command either on Windows CMD or Unix terminal:
@@ -38,7 +38,7 @@ The above command can work for retrieving many years and files at the same time,
 python tri_web_scraper.py -Y 2001 2002 2003 -F 1a 1b 2b
 ```
 
-## Data engineering module
+### Data engineering module
 
 In order to run the steps in the data engineering, navigate to the folder [transform](https://github.com/jodhernandezbe/PAU4Chem/tree/master/transform). Execute the following command either on Windows CMD or Unix terminal:
 
@@ -78,15 +78,15 @@ However, you can run each option for many years at the same time:
 ```
 python building_pau_db.py A -Y 1987 1988 1989
 ```
-# Disclaimer
+
+### Disclaimer
 
 The views expressed in this article are those of the authors and do not necessarily represent the views or policies of
 the U.S. Environmental Protection Agency. Any mention of trade names, products, or services does not imply an endorsement by the U.S.
 Government or the U.S. Environmental Protection Agency. The U.S. Environmental Protection Agency does not endorse any commercial products, service, or enterprises.
 
-# Acknowledgement
+### Acknowledgement
 
 This research was supported in by an appointment for Jose D. Hernandez-Betancur to the Research Participation
 Program at the Center for Environmental Solutions and Emergency Response, Office of Research and Development,
 U.S. Environmental Protection Agency, administered by the Oak Ridge Institute for Science and Education through an Interagency Agreement No. DW-89-92433001 between the U.S. Department of Energy and the U.S. Environmental Protection Agency.
-
