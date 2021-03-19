@@ -1,5 +1,6 @@
 **/__pycache__/
 /extract/datasets/*.csv
+.vscode/
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,windows,linux,macos,pycharm,vscode,visualstudio
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,windows,linux,macos,pycharm,vscode,visualstudio
