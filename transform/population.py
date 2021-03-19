@@ -1,3 +1,10 @@
+# population.py (PAU4Chem)
+# !/usr/bin/env python3
+# coding=utf-8
+
+
+"""TODO describe this file/module."""
+
 import pandas as pd
 import numpy as np
 from scipy.stats import lognorm
@@ -8,6 +15,14 @@ import re
 
 
 def Calling_US_census(dir_path):
+    """TODO describe this method.
+
+    Args:
+        dir_path (str): [description]
+
+    Returns:
+        [type]: [description]
+    """
     # 2008 Annual Survey of Manufactures (ASM):
     # Link: https://www.census.gov/data/tables/2008/econ/asm/2008-asm.html
     path_ASM_2008 = dir_path + '/us_census_bureau/ASM_2008.xlsx'
@@ -55,6 +70,16 @@ def Calling_US_census(dir_path):
 
 
 def Probability_establishments_within_cluster(naics, establishment, df):
+    """TODO describe this method.
+
+    Args:
+        naics ([type]): [description]
+        establishment ([type]): [description]
+        df ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     values = {'Sector': 2,
               'Subsector': 3,
               'Industry Group': 4,
@@ -94,6 +119,19 @@ def Probability_establishments_within_cluster(naics, establishment, df):
 def Probability_cluster_being_sampled(naics, establishment,
                                       total_establishments, n_clusters,
                                       df_census, df_tri):
+    """TODO describe this method.
+
+    Args:
+        naics ([type]): [description]
+        establishment ([type]): [description]
+        total_establishments ([type]): [description]
+        n_clusters ([type]): [description]
+        df_census ([type]): [description]
+        df_tri ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     values = {'Sector': 2,
               'Subsector': 3,
               'Industry Group': 4,
@@ -123,6 +161,14 @@ def Probability_cluster_being_sampled(naics, establishment,
 
 
 def calling_TRI_for_prioritization_sectors(dir_path):
+    """TODO describe this method.
+
+    Args:
+        dir_path ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     # The survey prioritized the clusters based on PACE 1994
     columns = ['ON-SITE - TOTAL WASTE MANAGEMENT',
                'ON-SITE - TOTAL LAND RELEASES',
@@ -162,6 +208,15 @@ def calling_TRI_for_prioritization_sectors(dir_path):
 
 
 def Organizing_sample(n_sampled_establishments, dir_path):
+    """TODO describe this method.
+
+    Args:
+        n_sampled_establishments ([type]): [description]
+        dir_path ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     sampled_clusters = pd.read_csv(
         dir_path + '/us_census_bureau/Selected_clusters_2005.txt',
         header=None, index_col=False)
@@ -288,6 +343,17 @@ def Organizing_sample(n_sampled_establishments, dir_path):
 
 
 def searching_census(naics, media, activity, df):
+    """TODO describe this method.
+
+    Args:
+        naics ([type]): [description]
+        media ([type]): [description]
+        activity ([type]): [description]
+        df ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     values = {'Sector': 2,
               'Subsector': 3,
               'Industry Group': 4,
@@ -316,6 +382,19 @@ def searching_census(naics, media, activity, df):
 
 def mean_standard(establishments, shipment_flow, rse,
                   total, shipment, confidence):
+    """TODO describe this method.
+
+    Args:
+        establishments ([type]): [description]
+        shipment_flow ([type]): [description]
+        rse ([type]): [description]
+        total ([type]): [description]
+        shipment ([type]): [description]
+        confidence ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     if total >= shipment:
         ratio = 0.0044
     else:
@@ -334,6 +413,16 @@ def mean_standard(establishments, shipment_flow, rse,
 def selecting_establishment_by_activity_and_media(info_establishments,
                                                   probability_activity,
                                                   probability_media):
+    """TODO describe this method.
+
+    Args:
+        info_establishments ([type]): [description]
+        probability_activity ([type]): [description]
+        probability_media ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     # P(activity and media and establishment) =
     # P(activity and media) * P(establishment). They are independent events
     selected_establishments = 0
@@ -362,6 +451,18 @@ def selecting_establishment_by_activity_and_media(info_establishments,
 
 def estimating_mass_by_activity_and_media(mu, theta_2, info_establishments,
                                           P_media, P_activity):
+    """TODO describe this method.
+
+    Args:
+        mu ([type]): [description]
+        theta_2 ([type]): [description]
+        info_establishments ([type]): [description]
+        P_media ([type]): [description]
+        P_activity ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     prob = [1 - vals[1]*P_activity*P_media
             for vals in info_establishments.values()]  # 1 - cdf
     shipments = [vals[0] for vals in info_establishments.values()]
@@ -380,6 +481,15 @@ def estimating_mass_by_activity_and_media(mu, theta_2, info_establishments,
 
 
 def searching_establishments_by_hierarchy(naics, df):
+    """TODO describe this method.
+
+    Args:
+        naics ([type]): [description]
+        df ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     try:
         if (naics == '31–33') | (len(naics) == 3):
             naics = '3[123]'
@@ -408,10 +518,17 @@ def searching_establishments_by_hierarchy(naics, df):
 
 
 def normalizing_shipments(df):
+    """TODO describe this method.
+
+    Args:
+        df ([type]): [description]
+    """
+
     def function_aux(info_estab, P_m, P_a, P_on, estab, Total):
         vals = info_estab[estab]
         info_estab.update({estab: [vals[0]*P_m*P_a*P_on*0.01/Total, vals[1]]})
         return info_estab
+
     estabs = set(
         [key for idx, row in df.iterrows() for key in
          row['Info probable establishments'].keys()])

@@ -1,5 +1,9 @@
-# -*- coding: utf-8 -*-
-# !/usr/bin/env python
+# tri_web_scraper.py (PAU4Chem)
+# !/usr/bin/env python3
+# coding=utf-8
+
+
+"""TODO describe this file/module."""
 
 # Importing libraries
 from bs4 import BeautifulSoup
@@ -16,8 +20,15 @@ from common import config
 
 
 class TRI_Scraper:
+    """TODO describe this class."""
 
     def __init__(self, year, Files):
+        """TODO describe this method.
+
+        Args:
+            year ([type]): [description]
+            Files ([type]): [description]
+        """
         self.year = year
         # Working Directory
         self._dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -31,11 +42,13 @@ class TRI_Scraper:
             self._TRI_File_Columns_Dictionary[File] = []
 
     def _visit(self):
+        """TODO describe this method."""
         html = requests.get(self._url).text
         time.sleep(15)
         self._soup = BeautifulSoup(html, 'html.parser')
 
     def _extracting_zip(self):
+        """TODO describe this method."""
         self._visit()
         self._TRI_zip_options = {}
         for link in self._soup.find_all(self._queries['TRI_year_reported']):
@@ -43,6 +56,7 @@ class TRI_Scraper:
                 self._queries['TRI_zip'])
 
     def _Calling_TRI_columns(self):
+        """TODO describe this method."""
         Path_columns = self._dir_path + '/../ancillary'
         for key in self._TRI_File_Columns_Dictionary.keys():
             inf_chardet = chardet.detect(open(
@@ -60,6 +74,7 @@ class TRI_Scraper:
 
     # Method for Extracting  information according to TRI's year report
     def extacting_TRI_data_files(self):
+        """TODO describe this method."""
         self._Calling_TRI_columns()
         self._extracting_zip()
         TRI_zip = self._TRI_zip_options[self.year]

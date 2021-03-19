@@ -1,5 +1,9 @@
-# -*- coding: utf-8 -*-
-# !/usr/bin/env python
+# building_pau_db.py (PAU4Chem)
+# !/usr/bin/env python3
+# coding=utf-8
+
+
+"""TODO describe this file/module."""
 
 # Note:
 # 1. Range of Influent Concentration was reported from 1987 through 2004
@@ -27,14 +31,25 @@ pd.options.mode.chained_assignment = None
 
 
 class PAU_DB:
+    """TODO describe this class."""
 
     def __init__(self, Year):
+        """TODO describe this method.
+
+        Args:
+            Year ([type]): [description]
+        """
         # Working Directory
         self._dir_path = os.path.dirname(os.path.realpath(__file__))
         self.Year = Year
         # self._dir_path = os.getcwd() # if you are working on Jupyter Notebook
 
     def calling_tri_files(self):
+        """TODO describe this method.
+
+        Returns:
+            [type]: [description]
+        """
         TRI_Files = dict()
         for file in ['1a', '1b', '2b']:
             columns = pd.read_csv(
@@ -49,6 +64,14 @@ class PAU_DB:
         return TRI_Files
 
     def is_number(self, s):
+        """TODO describe this method.
+
+        Args:
+            s ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         try:
             float(s)
             return True
@@ -62,6 +85,14 @@ class PAU_DB:
         return False
 
     def _efficiency_estimation_to_range(self, x):
+        """TODO describe this method.
+
+        Args:
+            x ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         if x != np.nan:
             x = np.abs(x)
             if (x >= 0.0) & (x <= 50.0):
@@ -81,6 +112,16 @@ class PAU_DB:
 
     def _effic_est_empties_based_on_epa_regulation(self, classification,
                                                    HAP, RCRA):
+        """TODO describe this method.
+
+        Args:
+            classification ([type]): [description]
+            HAP ([type]): [description]
+            RCRA ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         if RCRA == 'YES':
             if classification == 'DIOXIN':
                 result = np.random.uniform(99.9999, 100)
@@ -100,6 +141,11 @@ class PAU_DB:
             return None
 
     def _calling_SRS(self):
+        """TODO describe this method.
+
+        Returns:
+            [type]: [description]
+        """
         Acronyms = ['TRI', 'CAA', 'RCRA_F', 'RCRA_K', 'RCRA_P',
                     'RCRA_T', 'RCRA_U']
         Files = {Acronym: File for File in os.listdir(self._dir_path + '/srs')
@@ -128,6 +174,15 @@ class PAU_DB:
         return df
 
     def _changin_management_code_for_2004_and_prior(self, x, m_n):
+        """TODO describe this method.
+
+        Args:
+            x ([type]): [description]
+            m_n ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         Change = pd.read_csv(
             self._dir_path + '/../ancillary/Methods_TRI.csv',
             usecols=['Code 2004 and prior', 'Code 2005 and after'],
@@ -145,6 +200,11 @@ class PAU_DB:
             return [None]*m_n
 
     def organizing(self):
+        """TODO describe this method.
+
+        Returns:
+            [type]: [description]
+        """
         dfs = self.calling_tri_files()
         df = dfs['2b'].where(pd.notnull(dfs['2b']), None)
         if self.Year >= 2005:
@@ -420,6 +480,7 @@ class PAU_DB:
             str(self.Year) + '.csv', sep=',', index=False)
 
     def Building_database_for_statistics(self):
+        """TODO describe this method."""
         columns = pd.read_csv(
             self._dir_path +
             '/../ancillary/TRI_File_2b_needed_columns_for_statistics.txt',
@@ -505,6 +566,7 @@ class PAU_DB:
             sep=',', index=False)
 
     def Building_database_for_recycling_efficiency(self):
+        """TODO describe this method."""
         def _division(row, elements_total):
             if row['ON-SITE - RECYCLED'] == 0.0:
                 if row['CLASSIFICATION'] == 'TRI':
@@ -589,6 +651,15 @@ class PAU_DB:
             str(self.Year) + '.csv', sep=',', index=False)
 
     def _searching_naics(self, x, naics):
+        """TODO describe this method.
+
+        Args:
+            x ([type]): [description]
+            naics ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         # https://www.census.gov/programs-surveys/economic-census/guidance/understanding-naics.html
         values = {0: 'Nothing', 1: 'Nothing', 2: 'Sector', 3: 'Subsector',
                   4: 'Industry Group', 5: 'NAICS Industry',
@@ -607,6 +678,15 @@ class PAU_DB:
         return values[equal]
 
     def _phase_estimation_recycling(self, df_s, row):
+        """TODO describe this method.
+
+        Args:
+            df_s ([type]): [description]
+            row ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         # Solvent recovery
         if row['METHOD CODE - 2005 AND AFTER'] == 'H20':
             phases = ['L']
@@ -663,6 +743,18 @@ class PAU_DB:
 
     def _concentration_estimation_recycling(self, df_s, cas, naics,
                                             phase, structure):
+        """TODO describe this method.
+
+        Args:
+            df_s ([type]): [description]
+            cas ([type]): [description]
+            naics ([type]): [description]
+            phase ([type]): [description]
+            structure ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         df_s = df_s[['NAICS', 'CAS', 'WASTE', 'CONCENTRATION', 'VALUE']]
         df_s = df_s.loc[(df_s['CAS'] == cas) &
                         (df_s['WASTE'] == phase)]
@@ -675,6 +767,15 @@ class PAU_DB:
         return df.loc[df['VALUE'].idxmax(), 'CONCENTRATION']
 
     def _recycling_efficiency(self, row, df_s):
+        """TODO describe this method.
+
+        Args:
+            row ([type]): [description]
+            df_s ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         naics_structure = [
             'National Industry', 'NAICS Industry', 'Industry Group',
             'Subsector', 'Sector', 'Nothing']
@@ -709,6 +810,15 @@ class PAU_DB:
             return None
 
     def _phase_estimation_energy(self, df_s, row):
+        """TODO describe this method.
+
+        Args:
+            df_s ([type]): [description]
+            row ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         phases = ['S', 'L', 'A']
         if row['METHOD CODE - 2005 AND AFTER'] == 'U01':
             # Industrial Kilns (specially rotatory kilns) are used to
@@ -774,6 +884,19 @@ class PAU_DB:
 
     def _concentration_estimation_energy(self, df_s, cas, naics, phase,
                                          structure, incineration):
+        """TODO describe this method.
+
+        Args:
+            df_s ([type]): [description]
+            cas ([type]): [description]
+            naics ([type]): [description]
+            phase ([type]): [description]
+            structure ([type]): [description]
+            incineration ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         df_s = df_s[['NAICS', 'CAS', 'WASTE', 'CONCENTRATION',
                      'VALUE', 'INCINERATION']]
         df_s = df_s.loc[(df_s['CAS'] == cas) &
@@ -789,6 +912,15 @@ class PAU_DB:
         return df.loc[df['VALUE'].idxmax(), 'CONCENTRATION']
 
     def _energy_efficiency(self, df_s, row):
+        """TODO describe this method.
+
+        Args:
+            df_s ([type]): [description]
+            row ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         if self.Year <= 2004:
             df_s = df_s[['NAICS', 'CAS', 'WASTE', 'INCINERATION', 'IDEAL',
                          'EFFICIENCY ESTIMATION']]
@@ -842,6 +974,7 @@ class PAU_DB:
         return result
 
     def cleaning_database(self):
+        """TODO describe this method."""
         # Calling TRI restriction for metals
         Restrictions = pd.read_csv(
             self._dir_path +
@@ -1031,6 +1164,16 @@ class PAU_DB:
 
     def _Calculating_possible_waste_feed_supply(self, Flow, Concentration,
                                                 Efficiency):
+        """TODO describe this method.
+
+        Args:
+            Flow ([type]): [description]
+            Concentration ([type]): [description]
+            Efficiency ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         if Concentration == '1':
             percentanges_c = [1, 100]
         elif Concentration == '2':
@@ -1051,11 +1194,18 @@ class PAU_DB:
         return Interval, Middle
 
     def Building_database_for_flows(self, nbins):
+        """TODO describe this method.
+
+        Args:
+            nbins ([type]): [description]
+        """
+
         def func(x):
             if x.first_valid_index() is None:
                 return None
             else:
                 return x[x.first_valid_index()]
+
         with open(self._dir_path + '/../ancillary/Flow_columns.yaml',
                   mode='r') as f:
             dictionary_of_columns = yaml.load(f, Loader=yaml.FullLoader)
@@ -1189,6 +1339,7 @@ class PAU_DB:
                 self.Year, nbins), sep=',', index=False)
 
     def Organizing_substance_prices(self):
+        """TODO describe this method."""
         # Organizing information about prices
         df_prices = pd.read_csv(self._dir_path + '/prices/Chemical_Price.csv',
                                 dtype={'CAS NUMBER': 'object'})
@@ -1291,6 +1442,7 @@ class PAU_DB:
             sep=',', index=False)
 
     def pollution_abatement_cost_and_expenditure(self):
+        """TODO describe this method."""
         # Calling PAU
         df_PAU = pd.read_csv(
             self._dir_path +
@@ -1659,6 +1811,7 @@ class PAU_DB:
             sep=',', index=False)
 
     def Pollution_control_unit_position(self):
+        """TODO describe this method."""
         df_tri = pd.DataFrame()
         for Year in range(1987, 2005):
             df_tri_aux = pd.read_csv(
@@ -1693,6 +1846,7 @@ class PAU_DB:
             sep=',', index=False)
 
     def Searching_information_for_years_after_2004(self):
+        """TODO describe this method."""
         df_tri_older = pd.DataFrame()
         for year in range(1987, 2005):
             df_tri_older_aux = pd.read_csv(
