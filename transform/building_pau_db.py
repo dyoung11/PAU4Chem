@@ -79,9 +79,8 @@ class PAU_DB:
         else:
             return None
 
-    def _efficiency_estimation_empties_based_on_EPA_regulation(self,
-                                                               classification,
-                                                               HAP, RCRA):
+    def _effic_est_empties_based_on_epa_regulation(self, classification,
+                                                   HAP, RCRA):
         if RCRA == 'YES':
             if classification == 'DIOXIN':
                 result = np.random.uniform(99.9999, 100)
@@ -103,14 +102,14 @@ class PAU_DB:
     def _calling_SRS(self):
         Acronyms = ['TRI', 'CAA', 'RCRA_F', 'RCRA_K', 'RCRA_P',
                     'RCRA_T', 'RCRA_U']
-        Files = {Acronym: File for File in os.listdir(
-            self._dir_path + '/srs') for Acronym in Acronyms if Acronym in File}
+        Files = {Acronym: File for File in os.listdir(self._dir_path + '/srs')
+                 for Acronym in Acronyms if Acronym in File}
         columns = ['ID', 'Internal Tracking Number']
         df = pd.read_csv(
             self._dir_path + '/srs/' + Files['TRI'], low_memory=False,
             usecols=['ID', 'Internal Tracking Number'],
             converters={
-                'ID': lambda x: str(int(x)) if re.search('^\d', x) else x},
+                'ID': lambda x: str(int(x)) if re.search('^\\d', x) else x},
             dtype={'Internal Tracking Number': 'int64'})
         df = df.assign(HAP=['NO']*df.shape[0], RCRA=['NO']*df.shape[0])
         del Files['TRI']
@@ -149,9 +148,13 @@ class PAU_DB:
         dfs = self.calling_tri_files()
         df = dfs['2b'].where(pd.notnull(dfs['2b']), None)
         if self.Year >= 2005:
-            df.drop(columns=df.iloc[:, list(range(18, 71, 13))].columns.tolist(), inplace=True)
+            df.drop(
+                columns=df.iloc[:, list(range(18, 71, 13))].columns.tolist(),
+                inplace=True)
         else:
-            df.drop(columns=df.iloc[:, list(range(20, 73, 13))].columns.tolist(), inplace=True)
+            df.drop(
+                columns=df.iloc[:, list(range(20, 73, 13))].columns.tolist(),
+                inplace=True)
         df_PAUs = pd.DataFrame()
         Columns_0 = list(df.iloc[:, 0:8].columns)
         for i in range(5):
@@ -479,8 +482,8 @@ class PAU_DB:
                 'RANGE INFLUENT CONCENTRATION'].astype(int)
             df_statistics.rename(
                 columns={
-                    'TREATMENT EFFICIENCY ESTIMATION': 'EFFICIENCY ESTIMATION'},
-                inplace=True)
+                    'TREATMENT EFFICIENCY ESTIMATION': 'EFFICIENCY ESTIMATION'
+                }, inplace=True)
         else:
             df_statistics.rename(columns={
                 'TREATMENT EFFICIENCY RANGE CODE': 'EFFICIENCY RANGE'},
@@ -965,7 +968,7 @@ class PAU_DB:
                 PAU_energy = pd.merge(PAU_energy, SRS,
                                       on='CAS NUMBER', how='left')
                 PAU_energy['EFFICIENCY ESTIMATION'] = PAU_energy.apply(
-                    lambda x: self._efficiency_estimation_empties_based_on_EPA_regulation(
+                    lambda x: self._effic_est_empties_based_on_epa_regulation(
                         x['CLASSIFICATION'], x['HAP'], x['RCRA'])
                     if not x['EFFICIENCY ESTIMATION'] else
                     x['EFFICIENCY ESTIMATION'], axis=1)
@@ -984,7 +987,7 @@ class PAU_DB:
                 PAU_energy = pd.merge(PAU_energy, SRS,
                                       on='CAS NUMBER', how='left')
                 PAU_energy['EFFICIENCY RANGE CODE'] = PAU_energy.apply(
-                    lambda x: self._efficiency_estimation_empties_based_on_EPA_regulation(
+                    lambda x: self._effic_est_empties_based_on_epa_regulation(
                         x['CLASSIFICATION'], x['HAP'], x['RCRA'])
                     if not x['EFFICIENCY RANGE CODE'] else
                     x['EFFICIENCY RANGE CODE'], axis=1)
@@ -1211,7 +1214,7 @@ class PAU_DB:
             ~df_prices['QUANTITY'].str.contains(r'x')].index.tolist()
         df_prices.loc[idx, 'QUANTITY'] = '1x' + df_prices.loc[idx, 'QUANTITY']
         df_prices[['TIMES', 'MASS', 'UNIT']] = df_prices[
-            'QUANTITY'].str.extract('(\d+)x(\d+\.?\d*)(ton|[umk]{0,1}g)',
+            'QUANTITY'].str.extract('(\\d+)x(\\d+\\.?\\d*)(ton|[umk]{0,1}g)',
                                     expand=True)
         dictionary_mass = {'g': 1, 'mg': 0.001, 'kg': 1000,
                            'ug': 10**-6, 'ton': 907185}
@@ -1235,7 +1238,7 @@ class PAU_DB:
             f'/datasets/final_pau_datasets/PAUs_DB_filled_{self.Year}.csv',
             usecols=['TRIFID', 'CAS NUMBER', 'METHOD CODE - 2004 AND PRIOR'])
         df_PAU = df_PAU[
-            ~df_PAU['METHOD CODE - 2004 AND PRIOR'].str.contains('\+')]
+            ~df_PAU['METHOD CODE - 2004 AND PRIOR'].str.contains('+')]
 
         # Separating categories and chemicals
         categories = pd.read_csv(
